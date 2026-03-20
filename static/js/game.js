@@ -152,7 +152,8 @@ let gameState = {
     isGameOver: false,
     isPaused: false,
     lastAutoFire: 0,
-    hasLaserUpgrade: false, // 是否有激光升级
+    hasLaserUpgrade: false,
+    bossSpawned: false,
 };
 
 // 键盘状态
@@ -793,22 +794,17 @@ function spawnEnemy() {
     if (Math.random() < 1 / spawnRate * 60) {
         let type = 'normal';
 
-        // Boss生成
-        if (gameState.level === CONFIG.bossSpawnLevels[0]) {
+        // Boss生成 - 只在达到等级且未生成过Boss时生成一次
+        if (CONFIG.bossSpawnLevels.includes(gameState.level) && !gameState.bossSpawned) {
             type = 'boss';
-        } else if (gameState.level === CONFIG.bossSpawnLevels[1]) {
-            type = 'boss';
-        } else if (gameState.level === CONFIG.bossSpawnLevels[2]) {
-            type = 'boss';
-        } else {
+            gameState.bossSpawned = true;
+        } else if (!CONFIG.bossSpawnLevels.includes(gameState.level)) {
             // 根据等级选择类型
             const rand = Math.random();
             if (gameState.level >= 10 && rand < 0.2) {
                 type = 'fast';
             } else if (gameState.level >= 15 && rand < 0.3) {
                 type = 'heavy';
-            } else if (gameState.level >= 20 && rand < 0.05) {
-                type = 'fast';
             }
         }
 
@@ -1079,6 +1075,7 @@ function startGame() {
         isPaused: false,
         lastAutoFire: 0,
         hasLaserUpgrade: false,
+        bossSpawned: false,
     };
 
     // 初始化实体
